@@ -1,0 +1,64 @@
+//Made by: Crautor (Vitor Dallanol)
+//Github: https://github.com/Crautor
+
+// IMPORTAÇÃO DE BIBLIOTECAS
+#include <Thermistor.h> //INCLUSÃO DA BIBLIOTECA (TEMPERATURA)
+#include <SoftwareSerial.h> //INCLUSÃO DE BIBLIOTECA (BLUETOOTH)
+#include <dht11.h> //INCLUSÃO DE BIBLIOTECA  DHT11 (UMIDADE)
+#include <LiquidCrystal.h> //INCLUSÃOA DE BIBLIOTECA LCD (VISOR)
+
+// DECLARAÇÃO DE VARIAVEIS
+#define DHT11PIN 6 
+const int pinoRX = 0; //PINO DIGITAL 0 (RX)
+const int pinoTX = 1; //PINO DIGITAL 1 (TX)
+
+// COMANDOS ESPECIFICOS DE CADA BIBLIOTECA
+LiquidCrystal lcd(12,11,5,4,3,2);
+dht11 DHT11;//declaração da biblioteca DHT11.H (obrigatório)
+SoftwareSerial bluetooth(pinoRX, pinoTX); //PINOS QUE EMULAM A SERIAL, ONDE O PINO 0 É O RX E O PINO 1 É O TX
+Thermistor temp(2); //VARIÁVEL DO TIPO THERMISTOR, INDICANDO O PINO ANALÓGICO (A2) EM QUE O TERMISTOR ESTÁ CONECTADO
+
+
+void setup() {
+  
+  Serial.begin(9600); //INICIALIZA A SERIAL
+  bluetooth.begin(9600); //INICIALIZA A SERIAL DO BLUETOOTH
+  lcd.begin(16, 2); // INICIALIZA O LCD 16X2
+  delay(1000); //INTERVALO DE 1 SEGUNDO
+}
+void loop() {
+  int temperature = temp.getTemp(); //VARIÁVEL DO TIPO INTEIRO QUE RECEBE O VALOR DE TEMPERATURA CALCULADO PELA BIBLIOTECA
+  int chk = DHT11.read(DHT11PIN); // VARIÁVEL DO TIPO INTEIRO QUE RECEBE O VALOR DE UMIDADE CALCULADO PELA BIBLIOTECA
+
+  // IMPRESSÃO NO TERMINAL BLUETOOTH
+  bluetooth.print("Temperatura: "); // IMPRIME O TEXTO QUE ANTECEDE A TEMPERATURA NO TERMINAL DO BLUETOOTH
+  bluetooth.print(temperature); //IMPRIME A TEMPERATURA MEDIDA PELO SENSOR NO TERMINAL DO BLUETOOTH
+  bluetooth.println("*C"); //IMPRIME O TEXTO QUE PRECEDE A TEMPERATURA NO TERMINAL DO BLUETOOTH
+  
+  bluetooth.print("Umidade (%): "); // IMPRIME O TEXTO QUE ANTECEDE A UMIDADE NO TERMINAL DO BLUETOOTH
+  bluetooth.println((float)DHT11.humidity,2); // IMPRIME A UMIDADE NO TERMINAL DO BLUETOOTH
+
+  // IMPRESSÃO NO MONITOR SERIAL
+  Serial.print("Temperatura: "); //IMPRIME O TEXTO QUE ANTECEDE A TEMPERATURA NO MONITOR SERIAL
+  Serial.print(temperature); //IMPRIME A TEMPERATURA MEDIDA PELO SENSOR NO MONITOR SERIAL
+  Serial.println("*C"); //IMPRIME O TEXTO QUE PRECEDE A TEMPERATURA NO MONITOR SERIAL
+  
+  Serial.print("Umidade (%): ");// IMPRIME O TEXTO QUE ANTECEDE A UMIDADE NO MONITOR SERIAL
+  Serial.println((float)DHT11.humidity,2); // IMPRIME A UMIDADE NO MONITOR SERIAL
+
+  // IMPRESSÃO NO LCD
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Temperatura:"); //IMPRIME O TEXTO QUE ANTECEDE A TEMPERATURA NO LCD
+  lcd.print(temperature); //IMPRIME A TEMPERATURA MEDIDA PELO SENSOR NO LCD
+  lcd.print("*C"); //IMPRIME O TEXTO QUE PRECEDE A TEMPERATURA NO LCD
+  lcd.setCursor(0, 1);
+  lcd.print("Umidade (%): ");// IMPRIME O TEXTO QUE ANTECEDE A UMIDADE NO LCD
+  lcd.println((float)DHT11.humidity,2); // IMPRIME A UMIDADE NO LCD
+
+
+
+
+
+  delay(1000); //INTERVALO DE 1 SEGUNDO
+}
